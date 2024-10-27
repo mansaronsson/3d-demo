@@ -1,56 +1,17 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { Scene } from './core/Scene';
+import { ModelLoader } from './core/ModelLoader';
 
-// Renderer
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+const scene = new Scene();
+scene.initialize();
 
-// Scene
-const scene = new THREE.Scene();
-// fov, aspect ratio, near, far
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 1.2, 1.6);
-camera.rotation.set(-0.5, 0, 0);
-
-// Light
-const white_ambient_light = new THREE.AmbientLight(0xffffff, 0.1);
-scene.add(white_ambient_light);
-
-const lamp_light = new THREE.PointLight(0x8888ff, 2.0);
-lamp_light.position.set(0.5, 0.5, 0.5);
-scene.add(lamp_light);
-
-const white_directional_light = new THREE.DirectionalLight(0xffffff, 2.0);
-white_directional_light.position.set(-5, 5, 0);
-white_directional_light.target.position.set(0, 0, 0);
-scene.add(white_directional_light);
-
-// Load models
-let table_model: THREE.Group;
-const loader = new GLTFLoader();
-loader.load(
-    'assets/models/table.glb',
-    (gltf) => {
-        table_model = gltf.scene;
-        table_model.position.set(-.5, 0, -.5);
-        scene.add(table_model);
-    },
-    undefined,
-    (error) => { console.error(error); }
-);
-let lamps_model: THREE.Group;
-loader.load(
-    'assets/models/lamp.glb',
-    (gltf) => {
-        lamps_model = gltf.scene;
-        lamps_model.scale.set(0.1, 0.1, 0.1);
-        lamps_model.position.set(0.5, -0.2, .5);
-        scene.add(lamps_model);
-    },
-    undefined,
-    (error) => { console.error(error); }
-);
+const model_loader = new ModelLoader(scene.scene, scene.camera, scene.renderer);
+model_loader.loadModel('assets/models/table.glb', (model) => {
+    model.position.set(-.5, 0, -.5);
+});
+model_loader.loadModel('assets/models/lamp.glb', (model) => {
+    model.scale.set(0.1, 0.1, 0.1);
+    model.position.set(0.5, -0.2, .5);
+});
 
 // Animation loop
 function animate() {
@@ -58,6 +19,6 @@ function animate() {
 
     // Do something
 
-    renderer.render(scene, camera);
+    scene.render();
 }
 animate();
