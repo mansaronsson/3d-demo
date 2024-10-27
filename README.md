@@ -24,3 +24,10 @@ npm run build
 npm start
 ```
 Opens project in default browser at `http://localhost:9000`
+
+## Usage
+
+1. Select objects with the **mouse**
+2. Move selected object left and right with the **arrow keys**
+3. Press **t** to apply a procedural texture to selected object
+4. Press **h** to toggle hovering on the latest object that the procedural texture was added to
