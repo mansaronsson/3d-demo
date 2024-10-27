@@ -1,16 +1,30 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-// Scene
-const scene = new THREE.Scene();
-// fov, aspect ratio, near, far
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 5;
-
 // Renderer
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+// Scene
+const scene = new THREE.Scene();
+// fov, aspect ratio, near, far
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 1.2, 1.6);
+camera.rotation.set(-0.5, 0, 0);
+
+// Light
+const white_ambient_light = new THREE.AmbientLight(0xffffff, 0.1);
+scene.add(white_ambient_light);
+
+const lamp_light = new THREE.PointLight(0x8888ff, 2.0);
+lamp_light.position.set(0.5, 0.5, 0.5);
+scene.add(lamp_light);
+
+const white_directional_light = new THREE.DirectionalLight(0xffffff, 2.0);
+white_directional_light.position.set(-5, 5, 0);
+white_directional_light.target.position.set(0, 0, 0);
+scene.add(white_directional_light);
 
 // Load models
 let table_model: THREE.Group;
