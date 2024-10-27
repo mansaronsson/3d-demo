@@ -9,6 +9,7 @@ export class ModelLoader {
     private raycaster: THREE.Raycaster;
     private mouse: THREE.Vector2;
     private selected_model: THREE.Object3D | null = null;
+    private selected_material: THREE.ShaderMaterial | null = null;
 
     constructor(scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer) {
         this.loader = new GLTFLoader();
@@ -93,11 +94,16 @@ export class ModelLoader {
         if (this.selected_model && this.selected_model instanceof THREE.Mesh) {
             // Define the vertex shader as a string
             const vertex_shader = `
+                uniform float uOffsetY;
+                uniform float uTime;
                 varying vec2 vUv;
 
                 void main() {
                 vUv = uv;
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+                vec3 newPosition = position;
+                newPosition.y += sin(uTime * 2.0) * uOffsetY;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
                 }
                 `;
             // Define the fragment shader as a string
@@ -113,17 +119,28 @@ export class ModelLoader {
                 `;
 
             // Create ShaderMaterial with custom shaders
+            const offset_y = 1.0 / this.selected_model.scale.y;
             const procedural_material = new THREE.ShaderMaterial({
                 vertexShader: vertex_shader,
                 fragmentShader: fragment_shader,
-                uniforms: {}
+                uniforms: {
+                    uOffsetY: { value: offset_y },
+                    uTime: { value: 0.0 }
+                }
             });
 
             // Apply the material to the selected model
             (this.selected_model as THREE.Mesh).material = procedural_material;
+            this.selected_material = procedural_material;
             console.log(`Applied procedural texture to ${this.selected_model.name}`);
         } else {
             console.log('No model selected to apply texture.');
+        }
+    }
+
+    public updateTimeShader(delta_time: number) {
+        if (this.selected_material) {
+            this.selected_material.uniforms.uTime.value += delta_time;
         }
     }
 }

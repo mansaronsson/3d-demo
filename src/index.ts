@@ -14,6 +14,7 @@ model_loader.loadModel('assets/models/lamp.glb', (model) => {
 });
 
 // Add event listener keyboard inputs
+let should_hover = false;
 window.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowLeft') {
         model_loader.extendSelectedModelX(-0.1);
@@ -21,14 +22,22 @@ window.addEventListener('keydown', (event) => {
         model_loader.extendSelectedModelX(0.1);
     } else if (event.key === 't') {
         model_loader.applyProceduralTexture();
+    } else if (event.key === 'h') {
+        should_hover = !should_hover;
     }
 });
 
 // Animation loop
-function animate() {
+let prev_time_ms = 0;
+function animate(time_ms: number = 0) {
     requestAnimationFrame(animate);
 
-    // Do something
+    const delta_time_s = (time_ms - prev_time_ms) / 1000;
+    prev_time_ms = time_ms;
+
+    if (should_hover) {
+        model_loader.updateTimeShader(delta_time_s);
+    }
 
     scene.render();
 }
