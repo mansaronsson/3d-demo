@@ -13,6 +13,15 @@ model_loader.loadModel('assets/models/lamp.glb', (model) => {
     model.position.set(0.5, -0.2, .5);
 });
 
+// Add event listener for scaling the selected model on key press
+window.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+        model_loader.extendSelectedModelX(-0.1);
+    } else if (event.key === 'ArrowRight') {
+        model_loader.extendSelectedModelX(0.1);
+    }
+});
+
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);

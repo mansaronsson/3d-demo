@@ -63,4 +63,29 @@ export class ModelLoader {
     public getSelectedModel(): THREE.Object3D | null {
         return this.selected_model;
     }
+
+    public extendSelectedModelX(amount: number) {
+        if (this.selected_model && this.selected_model instanceof THREE.Mesh) {
+            if (this.selected_model.scale.x == 0) {
+                return;
+            }
+
+            // Direct manipulation of vertices
+            const geometry = (this.selected_model as THREE.Mesh).geometry;
+            if (geometry instanceof THREE.BufferGeometry) {
+                const position_attribute = geometry.attributes.position;
+
+                for (let i = 0; i < position_attribute.count; i++) {
+                    const x = position_attribute.getX(i);
+
+                    // Extend the model along the x-axis
+                    position_attribute.setX(i, x + amount / this.selected_model.scale.x);
+                }
+
+                position_attribute.needsUpdate = true;
+                geometry.computeBoundingBox();
+                geometry.computeBoundingSphere();
+            }
+        }
+    }
 }
