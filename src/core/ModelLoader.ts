@@ -88,4 +88,42 @@ export class ModelLoader {
             }
         }
     }
+
+    public applyProceduralTexture() {
+        if (this.selected_model && this.selected_model instanceof THREE.Mesh) {
+            // Define the vertex shader as a string
+            const vertex_shader = `
+                varying vec2 vUv;
+
+                void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+                `;
+            // Define the fragment shader as a string
+            const fragment_shader = `
+                varying vec2 vUv;
+
+                void main() {
+                // Create a checker pattern based on UV coordinates
+                float checker = step(0.5, mod(floor(vUv.x * 20.0) + floor(vUv.y * 20.0), 2.0));
+                vec3 color = mix(vec3(0.6, 0.1, 0.1), vec3(0.2, 0.7, 0.2), checker);
+                gl_FragColor = vec4(color, 1.0);
+                }
+                `;
+
+            // Create ShaderMaterial with custom shaders
+            const procedural_material = new THREE.ShaderMaterial({
+                vertexShader: vertex_shader,
+                fragmentShader: fragment_shader,
+                uniforms: {}
+            });
+
+            // Apply the material to the selected model
+            (this.selected_model as THREE.Mesh).material = procedural_material;
+            console.log(`Applied procedural texture to ${this.selected_model.name}`);
+        } else {
+            console.log('No model selected to apply texture.');
+        }
+    }
 }
